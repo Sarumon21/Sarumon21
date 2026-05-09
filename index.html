@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S21 V8</title>
+
+<style>
+
+body{
+    margin:0;
+    padding:20px;
+    font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+    background:#0f0f10;
+    color:white;
+}
+
+.container{
+    max-width:600px;
+    margin:auto;
+}
+
+.card{
+    background:#1c1c1e;
+    padding:18px;
+    border-radius:18px;
+    margin-bottom:18px;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    margin-top:10px;
+    border:none;
+    border-radius:12px;
+    background:#2c2c2e;
+    color:white;
+    font-size:16px;
+    box-sizing:border-box;
+}
+
+button{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:14px;
+    font-size:17px;
+    font-weight:700;
+    margin-top:12px;
+}
+
+.start{
+    background:#0A84FF;
+    color:white;
+}
+
+.break{
+    background:#FF9F0A;
+    color:black;
+}
+
+.finish{
+    background:#30D158;
+    color:black;
+}
+
+.history-item{
+    background:#2c2c2e;
+    padding:14px;
+    border-radius:14px;
+    margin-top:12px;
+}
+
+.title{
+    text-align:center;
+    font-size:34px;
+    font-weight:800;
+    margin-bottom:20px;
+}
+
+.small{
+    opacity:0.8;
+    margin-top:6px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="title">S21 V8</div>
+
+<div class="card">
+
+<input id="ref" placeholder="REF">
+
+<input id="startMileage" placeholder="Start mileage">
+
+<input id="finishMileage" placeholder="Finish mileage">
+
+<input id="parking" placeholder="Miejsce postoju">
+
+</div>
+
+<div class="card">
+
+<div id="startText">Start: --:--</div>
+<div class="small" id="breakText">Break: 0 min</div>
+<div class="small" id="workText">Czas pracy: 00:00</div>
+<div class="small" id="mileageText">Przebieg: 0 mil</div>
+
+<button class="start" onclick="startShift()">START SHIFT</button>
+
+<button class="break" onclick="toggleBreak()">START BREAK</button>
+
+<button class="finish" onclick="finishShift()">FINISH SHIFT</button>
+
+</div>
+
+<div class="card">
+
+<h2>Historia</h2>
+
+<div id="history"></div>
+
+</div>
+
+</div>
+
+<script>
+
+let shiftStarted = false
+let onBreak = false
+
+let startTime = null
+let breakStart = null
+let totalBreak = 0
+
+function startShift(){
+
+    startTime = new Date()
+    shiftStarted = true
+
+    document.getElementById("startText").innerText =
+        "Start: " + startTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+
+    setInterval(updateWorkTime,1000)
+}
+
+function toggleBreak(){
+
+    if(!shiftStarted) return
+
+    if(!onBreak){
+
+        breakStart = new Date()
+        onBreak = true
+
+        event.target.innerText = "END BREAK"
+
+    }else{
+
+        const mins = Math.floor((new Date() - breakStart)/60000)
+
+        totalBreak += mins
+
+        document.getElementById("breakText").innerText =
+            "Break: " + totalBreak + " min"
+
+        onBreak = false
+
+        event.target.innerText = "START BREAK"
+    }
+}
+
+function updateWorkTime(){
+
+    if(!shiftStarted) return
+
+    const now = new Date()
+
+    let mins = Math.floor((now - startTime)/60000)
+
+    mins -= totalBreak
+
+    const h = String(Math.floor(mins/60)).padStart(2,'0')
+    const m = String(mins%60).padStart(2,'0')
+
+    document.getElementById("workText").innerText =
+        "Czas pracy: " + h + ":" + m
+}
+
+function finishShift(){
+
+    if(!shiftStarted) return
+
+    const ref = document.getElementById("ref").value
+    const startMileage = parseInt(document.getElementById("startMileage").value || 0)
+    const finishMileage = parseInt(document.getElementById("finishMileage").value || 0)
+    const parking = document.getElementById("parking").value
+
+    const mileage = finishMileage - startMileage
+
+    document.getElementById("mileageText").innerText =
+        "Przebieg: " + mileage + " mil"
+
+    const item = document.createElement("div")
+    item.className = "history-item"
+
+    item.innerHTML = `
+        <b>REF:</b> ${ref}<br>
+        <b>Postój:</b> ${parking}<br>
+        <b>Przebieg:</b> ${mileage} mil<br>
+        <b>Break:</b> ${totalBreak} min<br>
+        <b>Koniec:</b> ${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
+    `
+
+    document.getElementById("history").prepend(item)
+
+    shiftStarted = false
+    totalBreak = 0
+
+    document.getElementById("breakText").innerText = "Break: 0 min"
+
+}
+
+</script>
+
+</body>
+</html>
