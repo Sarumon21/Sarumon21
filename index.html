@@ -111,6 +111,19 @@ margin-top:8px;
 font-size:14px;
 }
 
+details{
+margin-top:14px;
+background:#222229;
+padding:14px;
+border-radius:18px;
+}
+
+summary{
+font-size:18px;
+font-weight:700;
+cursor:pointer;
+}
+
 @media(max-width:500px){
 
 .grid{
@@ -135,6 +148,31 @@ font-size:36px;
 <div class="card">
 
 <div class="section">Dzień pracy</div>
+<details class="advanced">
+
+<summary>⚙️ Opcje Zaawansowane</summary>
+
+<select id="dailyRest">
+<option value="">Pauza dzienna</option>
+<option>9h</option>
+<option>11h</option>
+</select>
+
+<select id="ferry">
+<option value="">Ferry Movement</option>
+<option>Tak</option>
+<option>Nie</option>
+</select>
+
+<select id="doubleManning">
+<option value="">Double Manning</option>
+<option>Tak</option>
+<option>Nie</option>
+</select>
+
+<input placeholder="Notatki">
+
+</details>
 
 <input type="datetime-local" id="date">
 
