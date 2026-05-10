@@ -136,7 +136,7 @@ font-size:36px;
 
 <div class="section">Dzień pracy</div>
 
-<input type="text" id="date" placeholder="Data">
+<input type="datetime-local" id="date">
 
 <input placeholder="Rejestracja pojazdu" id="vehicle">
 
@@ -157,6 +157,18 @@ font-size:36px;
 <option>13 godzin</option>
 <option>15 godzin</option>
 <option>Skrócony czas pracy</option>
+</select>
+
+<select id="dailyRest">
+<option value="">Pauza dzienna</option>
+<option value="9h">9h</option>
+<option value="11h">11h</option>
+</select>
+
+<select id="ferry">
+<option value="">Ferry Movement</option>
+<option value="Tak">Tak</option>
+<option value="Nie">Nie</option>
 </select>
 
 </div>
@@ -222,13 +234,15 @@ let breakStart=null
 let totalBreak=0
 let timer=null
 
-document.getElementById("date").valueAsDate = new Date()
-const today = new Date()
+const now = new Date()
 
 const formatted =
-today.getFullYear() + "-" +
-String(today.getMonth()+1).padStart(2,'0') + "-" +
-String(today.getDate()).padStart(2,'0')
+now.getFullYear() + "-" +
+String(now.getMonth()+1).padStart(2,'0') + "-" +
+String(now.getDate()).padStart(2,'0') +
+"T" +
+String(now.getHours()).padStart(2,'0') + ":" +
+String(now.getMinutes()).padStart(2,'0')
 
 document.getElementById("date").value = formatted
 
@@ -315,6 +329,8 @@ startMileage: document.getElementById("startMileage").value,
 finishMileage: document.getElementById("finishMileage").value,
 parking: document.getElementById("parking").value,
 workType: document.getElementById("workType").value,
+dailyRest: document.getElementById("dailyRest").value,
+ferry: document.getElementById("ferry").value,
 start: formatTime(startTime),
 finish: formatTime(finishTime),
 breaks: totalBreak
@@ -349,7 +365,7 @@ container.innerHTML=""
 
 let history = JSON.parse(localStorage.getItem("s21_history") || "[]")
 
-history.forEach(item=>{
+history.forEach((item,index)=>{
 
 const div = document.createElement("div")
 div.className="history-item"
@@ -361,7 +377,12 @@ div.innerHTML = `
 📍 ${item.parking}<br>
 🛣 ${item.startMileage} → ${item.finishMileage} (${item.mileage} mil)<br>
 ☕ Pauza: ${item.breaks} min<br>
+🛌 Daily rest: ${item.dailyRest}<br>
+⛴ Ferry Movement: ${item.ferry}<br>
 <div class="badge">${item.workType}</div>
+<button onclick="deleteEntry(${index})">
+Usuń wpis
+</button>
 `
 
 container.appendChild(div)
@@ -415,7 +436,20 @@ timer = setInterval(updateWorkTime,1000)
 }
 
 }
+function deleteEntry(index){
 
+let history =
+JSON.parse(localStorage.getItem("s21_history") || "[]")
+
+history.splice(index,1)
+
+localStorage.setItem(
+"s21_history",
+JSON.stringify(history)
+)
+
+renderHistory()
+}
 </script>
 
 </body>
