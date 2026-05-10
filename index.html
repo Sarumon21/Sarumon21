@@ -3,112 +3,126 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>S21 V8</title>
+<title>S21 V8 PRO</title>
 
 <style>
+
 *{
 box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
 }
 
 body{
 margin:0;
-padding:max(20px, env(safe-area-inset-top)) 16px 40px 16px;
-background:#0b0b0c;
+background:#0b0b0d;
 color:white;
 font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-overflow-x:hidden;
+padding:20px 16px 40px;
 }
 
 .container{
-width:100%;
-max-width:680px;
+max-width:700px;
 margin:auto;
 }
 
 .title{
-text-align:center;
-font-size:48px;
+font-size:42px;
 font-weight:900;
-margin:20px 0 24px 0;
+text-align:center;
+margin-bottom:20px;
 }
 
 .card{
-background:#17171a;
+background:#17171b;
 border-radius:24px;
 padding:18px;
 margin-bottom:18px;
-width:100%;
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
 }
 
 input, select{
 width:100%;
-padding:16px;
-margin-top:12px;
+padding:15px;
 border:none;
 border-radius:16px;
-background:#2a2a30;
+background:#2a2a31;
 color:white;
-font-size:17px;
-appearance:none;
--webkit-appearance:none;
+font-size:16px;
+margin-top:12px;
+}
+
+.stat{
+background:#222229;
+padding:14px;
+border-radius:18px;
+text-align:center;
+}
+
+.stat-title{
+opacity:.7;
+font-size:14px;
+}
+
+.stat-value{
+font-size:24px;
+font-weight:800;
+margin-top:6px;
 }
 
 button{
 width:100%;
 padding:18px;
-margin-top:14px;
 border:none;
 border-radius:18px;
 font-size:18px;
 font-weight:800;
+margin-top:12px;
 }
 
-.start{
-background:#0A84FF;
-color:white;
-}
+.start{background:#0A84FF;color:white;}
+.break{background:#FF9F0A;color:black;}
+.finish{background:#30D158;color:black;}
 
-.break{
-background:#ff9f0a;
-color:black;
-}
-
-.finish{
-background:#30d158;
-color:black;
-}
-
-.info{
-font-size:20px;
-margin-top:14px;
-line-height:1.5;
-}
-
-.history{
-margin-top:14px;
+.history-item{
+background:#24242b;
 padding:16px;
 border-radius:18px;
-background:#2a2a30;
+margin-top:14px;
 line-height:1.8;
-font-size:16px;
 }
 
-@media (max-width:430px){
+.section{
+font-size:24px;
+font-weight:800;
+margin-bottom:10px;
+}
+
+.badge{
+display:inline-block;
+padding:6px 12px;
+border-radius:999px;
+background:#34343c;
+margin-top:8px;
+font-size:14px;
+}
+
+@media(max-width:500px){
+
+.grid{
+grid-template-columns:1fr;
+}
 
 .title{
-font-size:42px;
-}
-
-.info{
-font-size:18px;
-}
-
-button{
-font-size:17px;
-padding:16px;
+font-size:36px;
 }
 
 }
+
 </style>
 </head>
 
@@ -120,20 +134,26 @@ padding:16px;
 
 <div class="card">
 
-<input type="date">
+<div class="section">Dzień pracy</div>
 
-<input placeholder="Rejestracja pojazdu">
+<input type="text" id="date" placeholder="Data">
 
-<input placeholder="Numer naczepy">
+<input placeholder="Rejestracja pojazdu" id="vehicle">
 
-<input placeholder="Start mileage">
+<input placeholder="Numer naczepy" id="trailer">
 
-<input placeholder="Finish mileage">
+<div class="grid">
 
-<input placeholder="Miejsce postoju">
+<input placeholder="Start mileage" id="startMileage">
 
-<select>
-<option>Wykorzystany czas pracy</option>
+<input placeholder="Finish mileage" id="finishMileage">
+
+</div>
+
+<input placeholder="Miejsce postoju" id="parking">
+
+<select id="workType">
+<option value="">Wykorzystany czas pracy</option>
 <option>13 godzin</option>
 <option>15 godzin</option>
 <option>Skrócony czas pracy</option>
@@ -143,31 +163,260 @@ padding:16px;
 
 <div class="card">
 
-<div class="info">Start: --:--</div>
-<div class="info">Finish: --:--</div>
-<div class="info">Pauza: 0 min</div>
-<div class="info">Czas pracy: 00:00</div>
-<div class="info">Mileage today: 0 mil</div>
+<div class="section">Live status</div>
 
-<button class="start">START SHIFT</button>
+<div class="grid">
 
-<button class="break">START BREAK</button>
+<div class="stat">
+<div class="stat-title">START</div>
+<div class="stat-value" id="startText">--:--</div>
+</div>
 
-<button class="finish">FINISH SHIFT</button>
+<div class="stat">
+<div class="stat-title">FINISH</div>
+<div class="stat-value" id="finishText">--:--</div>
+</div>
+
+<div class="stat">
+<div class="stat-title">PAUZA</div>
+<div class="stat-value" id="breakText">0 min</div>
+</div>
+
+<div class="stat">
+<div class="stat-title">CZAS PRACY</div>
+<div class="stat-value" id="workText">00:00</div>
+</div>
+
+<div class="stat">
+<div class="stat-title">MILEAGE</div>
+<div class="stat-value" id="mileageText">0</div>
+</div>
+
+</div>
+
+<button class="start" onclick="startShift()">START SHIFT</button>
+
+<button class="break" id="breakBtn" onclick="toggleBreak()">START BREAK</button>
+
+<button class="finish" onclick="finishShift()">FINISH SHIFT</button>
 
 </div>
 
 <div class="card">
 
-<h2>Historia dni</h2>
+<div class="section">Historia dni</div>
 
-<div class="history">
-Tutaj będą zapisane zakończone dni pracy.
-</div>
+<div id="history"></div>
 
 </div>
 
 </div>
+
+<script>
+
+let shiftStarted=false
+let onBreak=false
+let startTime=null
+let finishTime=null
+let breakStart=null
+let totalBreak=0
+let timer=null
+
+document.getElementById("date").valueAsDate = new Date()
+const today = new Date()
+
+const formatted =
+today.getFullYear() + "-" +
+String(today.getMonth()+1).padStart(2,'0') + "-" +
+String(today.getDate()).padStart(2,'0')
+
+document.getElementById("date").value = formatted
+
+loadHistory()
+
+function startShift(){
+
+if(shiftStarted) return
+
+startTime = new Date()
+shiftStarted = true
+
+document.getElementById("startText").innerText = formatTime(startTime)
+
+clearInterval(timer)
+timer = setInterval(updateWorkTime,1000)
+
+saveCurrentState()
+}
+
+function toggleBreak(){
+
+if(!shiftStarted) return
+
+const btn = document.getElementById("breakBtn")
+
+if(!onBreak){
+
+breakStart = new Date()
+onBreak = true
+btn.innerText = "END BREAK"
+
+}else{
+
+const mins = Math.floor((new Date()-breakStart)/60000)
+
+totalBreak += mins
+
+document.getElementById("breakText").innerText =
+totalBreak + " min"
+
+onBreak=false
+btn.innerText="START BREAK"
+
+saveCurrentState()
+}
+
+}
+
+function updateWorkTime(){
+
+if(!shiftStarted) return
+
+let mins = Math.floor((new Date()-startTime)/60000)
+
+mins -= totalBreak
+
+const h = String(Math.floor(mins/60)).padStart(2,'0')
+const m = String(mins%60).padStart(2,'0')
+
+document.getElementById("workText").innerText = h + ":" + m
+
+const startMileage = parseInt(document.getElementById("startMileage").value || 0)
+const finishMileage = parseInt(document.getElementById("finishMileage").value || 0)
+
+document.getElementById("mileageText").innerText =
+Math.max(finishMileage-startMileage,0)
+}
+
+function finishShift(){
+
+if(!shiftStarted) return
+
+finishTime = new Date()
+
+document.getElementById("finishText").innerText =
+formatTime(finishTime)
+
+const data = {
+date: document.getElementById("date").value,
+vehicle: document.getElementById("vehicle").value,
+trailer: document.getElementById("trailer").value,
+startMileage: document.getElementById("startMileage").value,
+finishMileage: document.getElementById("finishMileage").value,
+parking: document.getElementById("parking").value,
+workType: document.getElementById("workType").value,
+start: formatTime(startTime),
+finish: formatTime(finishTime),
+breaks: totalBreak
+}
+
+const mileage =
+(parseInt(data.finishMileage || 0) -
+parseInt(data.startMileage || 0))
+
+let history = JSON.parse(localStorage.getItem("s21_history") || "[]")
+
+history.unshift({...data,mileage})
+
+localStorage.setItem("s21_history", JSON.stringify(history))
+
+renderHistory()
+
+shiftStarted=false
+onBreak=false
+totalBreak=0
+
+document.getElementById("breakBtn").innerText="START BREAK"
+
+saveCurrentState()
+}
+
+function renderHistory(){
+
+const container = document.getElementById("history")
+
+container.innerHTML=""
+
+let history = JSON.parse(localStorage.getItem("s21_history") || "[]")
+
+history.forEach(item=>{
+
+const div = document.createElement("div")
+div.className="history-item"
+
+div.innerHTML = `
+<b>${item.date}</b><br>
+🚛 ${item.vehicle} | ${item.trailer}<br>
+🕒 ${item.start} - ${item.finish}<br>
+📍 ${item.parking}<br>
+🛣 ${item.startMileage} → ${item.finishMileage} (${item.mileage} mil)<br>
+☕ Pauza: ${item.breaks} min<br>
+<div class="badge">${item.workType}</div>
+`
+
+container.appendChild(div)
+
+})
+
+}
+
+function formatTime(date){
+
+return date.toLocaleTimeString([],{
+hour:'2-digit',
+minute:'2-digit'
+})
+
+}
+
+function saveCurrentState(){
+
+const state = {
+shiftStarted,
+onBreak,
+totalBreak,
+startTime: startTime ? startTime.toISOString() : null
+}
+
+localStorage.setItem("s21_current", JSON.stringify(state))
+
+}
+
+function loadHistory(){
+renderHistory()
+
+const saved = JSON.parse(localStorage.getItem("s21_current") || "{}")
+
+if(saved.startTime){
+startTime = new Date(saved.startTime)
+shiftStarted = saved.shiftStarted
+onBreak = saved.onBreak
+totalBreak = saved.totalBreak || 0
+
+document.getElementById("startText").innerText =
+formatTime(startTime)
+
+document.getElementById("breakText").innerText =
+totalBreak + " min"
+
+if(shiftStarted){
+timer = setInterval(updateWorkTime,1000)
+}
+}
+
+}
+
+</script>
 
 </body>
 </html>
