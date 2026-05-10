@@ -112,16 +112,27 @@ font-size:14px;
 }
 
 details{
-margin-top:14px;
-background:#222229;
-padding:14px;
-border-radius:18px;
+width:100%;
+margin-top:12px;
+background:#2a2a31;
+border-radius:16px;
+overflow:hidden;
 }
 
 summary{
-font-size:18px;
+list-style:none;
+padding:15px;
+font-size:16px;
 font-weight:700;
 cursor:pointer;
+display:flex;
+align-items:center;
+min-height:56px;
+width:100%;
+}
+
+summary::-webkit-details-marker{
+display:none;
 }
 
 @media(max-width:500px){
